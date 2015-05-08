@@ -25,9 +25,7 @@ start : App model action -> Signal Html
 An `App` has three key components:
 
   * `model` &mdash; a big chunk of data fully describing your application
-
   * `view` &mdash; a way to show your model on screen
-
   * `update` &mdash; a function to update your model
 
 Okay, so once you have your `App` you give it to `start` and it is running.
