@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "summary": "start making HTML apps really easily",
+    "repository": "https://github.com/evancz/start-app.git",
+    "license": "BSD3",
+    "source-directories": [
+        "src"
+    ],
+    "exposed-modules": [
+        "StartApp"
+    ],
+    "dependencies": {
+        "elm-lang/core": "2.0.1 <= v < 3.0.0",
+        "evancz/elm-html": "3.0.0 <= v < 4.0.0"
+    },
+    "elm-version": "0.15.0 <= v < 0.16.0"
+}
