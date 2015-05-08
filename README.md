@@ -25,7 +25,7 @@ start : App model action -> Signal Html
 An `App` has three key components:
 
   * `model` &mdash; a big chunk of data fully describing your application
-  * `view` &mdash; a way to show your model on screen
+  * `view` &mdash; a way to show your model on screen with [elm-html][]
   * `update` &mdash; a function to update your model
 
 Okay, so once you have your `App` you give it to `start` and it is running.
@@ -33,7 +33,6 @@ That's all there is to it.
 
 [elm-html]: http://elm-lang.org/blog/Blazing-Fast-Html.elm
 [address]: http://package.elm-lang.org/packages/elm-lang/core/2.0.1/Signal#Mailbox
-[arch]: https://github.com/evancz/elm-architecture-tutorial/
 
 
 ## Example
