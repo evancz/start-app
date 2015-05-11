@@ -10,6 +10,14 @@ seting everything up so you can focus entirely on writing your app.
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 [elm-html]: http://elm-lang.org/blog/Blazing-Fast-Html.elm
 
+Try it [online][edit] or install [Elm Platform](https://www.npmjs.com/package/elm)
+and run these commands to get all the relevant packages locally:
+
+```
+elm-package install evancz/start-app
+elm-package install evancz/elm-html
+```
+
 ## Example
 
 The following chunk of code sets up a simple counter that you can increment
