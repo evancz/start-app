@@ -5,7 +5,7 @@ Getting started with Elm is now easier than ever with the `StartApp` package.
 With [the Elm Architecture][arch], it has never been easier to write modular
 front-end code that is [shockingly fast][elm-html] and easy to test, refactor,
 and debug. The `StartApp` package drastically lowers the barrier to entry,
-seting everything up so you can focus entirely on writing your app. 
+setting everything up so you can focus entirely on writing your app. 
 
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 [elm-html]: http://elm-lang.org/blog/Blazing-Fast-Html.elm
