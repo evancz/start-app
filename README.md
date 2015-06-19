@@ -77,7 +77,7 @@ Even when you are hacking something together at 4am in the morning.
 
 But why? Everything in Elm is built on immutable data structures that
 provide an amazing amount of reliability in a large code base while
-[maintaining speed](http://elm-lang.org/blog/announce/0.12.1.elm). Immutability
+[maintaining speed](http://elm-lang.org/blog/announce/0.12.1). Immutability
 means that **it is literally impossible to mix your `model` and `view`**.
 It simply is not possible to mutate state in event handlers, so a growing
 code-base does not rot and degrade as logic is spread to weirder and weirder
