@@ -5,7 +5,7 @@ Getting started with Elm is now easier than ever with the `StartApp` package.
 With [the Elm Architecture][arch], it has never been easier to write modular
 front-end code that is [shockingly fast][elm-html] and easy to test, refactor,
 and debug. The `StartApp` package drastically lowers the barrier to entry,
-setting everything up so you can focus entirely on writing your app. 
+setting everything up so you can focus entirely on writing your app.
 
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 [elm-html]: http://elm-lang.org/blog/Blazing-Fast-Html.elm
@@ -62,6 +62,28 @@ worrying about the DOM.
 
 So this is a super simple program, but the core concepts here can grow into
 great code bases if you follow [the Elm Architecture][arch].
+
+**To play with this on your own machine, follow these steps:**
+
+1. Run those `elm-package install ...` commands from the "Getting started"
+   section.
+2. In the same directory, paste the code above into a new file. We'll call it
+   `Crementer.elm`.
+3. Run `elm make Crementer.elm`. This will output a file called, simply,
+   `elm.js`. This is kind of like `a.out` when compiling C code — just a
+   generic name for the whole kit and caboodle.
+4. Create an html file to bootstrap the `elm.js` file. We'll call it
+   `Crementer.html`, and paste in the following code:
+
+   ```html
+   <script src="elm.js"></script>
+   <body></body>
+   <script>Elm.fullscreen(Elm.Main)</script>
+   ```
+   It's not pretty HTML, but it does the trick, and Elm will take over from
+   there.
+5. Open `Crementer.html` with your browser. Using `file://` works just fine!
+
 
 ## How it works
 
