@@ -97,7 +97,7 @@ type alias App model action =
 ```
 
 An `App` is defined as a `model`, a way to `update` that model, and a way to
-`view` that model. Your job is to define and `App` and then `start` it up!
+`view` that model. Your job is to define an `App` and then `start` it up!
 
 ```elm
 start : App model action -> Signal Html
