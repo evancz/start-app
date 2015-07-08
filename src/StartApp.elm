@@ -7,7 +7,7 @@ shockingly pleasant. Definititely read [the tutorial][arch] to get started!
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 
 # Define your App
-@docs App
+@docs App, LoopbackFun
 
 # Run your App
 @docs start
@@ -44,10 +44,17 @@ hard in other languages.
 type alias App model action error =
     { initialState : model
     , view : Address action -> model -> Html
-    , update : action -> model -> (model, Maybe (T.Task error action))
+    , update : LoopbackFun action error
+            -> action
+            -> model
+            -> (model, Maybe (T.Task error ()))
     , noOp : action
     }
 
+{-| Use this in your update function to push the result of a task
+into your action channel. (TODO: more docs) -}
+type alias LoopbackFun action error =
+  T.Task error action -> T.Task error ()
 
 {-| This actually starts up your `App`. The following code sets up a counter
 that can be incremented and decremented. You can read more about writing
@@ -85,22 +92,23 @@ start : App model action error
      -> (Signal Html, Signal (T.Task error ()))
 start app externalActions =
   let
+    --loopbackFun : LoopbackFun action error
+    loopbackFun actionTask =
+      actionTask
+        `T.andThen` (Signal.send actionsMailbox.address)
+
     --actionsMailbox : Signal.Mailbox action
     actionsMailbox =
       Signal.mailbox app.noOp
-
-    --sendToMailbox : action -> T.Task error ()
-    sendToMailbox action =
-      Signal.send actionsMailbox.address action
 
     --allActions : Signal action
     allActions =
       Signal.merge actionsMailbox.signal externalActions
 
-    --stateAndTask : Signal (model, Maybe (T.Task error action))
+    --stateAndTask : Signal (model, Maybe (T.Task error ()))
     stateAndTask =
       Signal.foldp
-        (\action (state, _) -> app.update action state)
+        (\action (state, _) -> app.update loopbackFun action state)
         (app.initialState, Nothing)
         allActions
 
@@ -113,7 +121,6 @@ start app externalActions =
     --tasks : Signal (T.Task error ())
     tasks =
       stateAndTask
-        |> Signal.filterMap snd (T.succeed app.noOp)
-        |> Signal.map (\task -> task `T.andThen` sendToMailbox)
+        |> Signal.filterMap snd (T.succeed ())
   in
     (html, tasks)
