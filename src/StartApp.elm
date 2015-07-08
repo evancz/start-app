@@ -14,8 +14,9 @@ shockingly pleasant. Definititely read [the tutorial][arch] to get started!
 
 -}
 
-import Html exposing (Html)
+import Html exposing (..)
 import Signal exposing (Address)
+import Task as T
 
 
 {-| An app has three key components:
@@ -40,10 +41,11 @@ hard in other languages.
 [address]: http://package.elm-lang.org/packages/elm-lang/core/2.0.1/Signal#Mailbox
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 -}
-type alias App model action =
-    { model : model
+type alias App model action error =
+    { initialState : model
     , view : Address action -> model -> Html
-    , update : action -> model -> model
+    , update : action -> model -> (model, Maybe (T.Task error action))
+    , noOp : action
     }
 
 
@@ -78,19 +80,40 @@ Notice that the program cleanly breaks up into model, update, and view.
 This means it is super easy to test your update logic independent of any
 rendering.
 -}
-start : App model action -> Signal Html
-start app =
+start : App model action error
+     -> Signal action
+     -> (Signal Html, Signal (T.Task error ()))
+start app externalActions =
   let
-    actions =
-      Signal.mailbox Nothing
+    --actionsMailbox : Signal.Mailbox action
+    actionsMailbox =
+      Signal.mailbox app.noOp
 
-    address =
-      Signal.forwardTo actions.address Just
+    --sendToMailbox : action -> T.Task error ()
+    sendToMailbox action =
+      Signal.send actionsMailbox.address action
 
-    model =
+    --allActions : Signal action
+    allActions =
+      Signal.merge actionsMailbox.signal externalActions
+
+    --stateAndTask : Signal (model, Maybe (T.Task error action))
+    stateAndTask =
       Signal.foldp
-        (\(Just action) model -> app.update action model)
-        app.model
-        actions.signal
+        (\action (state, _) -> app.update action state)
+        (app.initialState, Nothing)
+        allActions
+
+    --html : Signal Html
+    html =
+      stateAndTask
+        |> Signal.map fst
+        |> Signal.map (app.view actionsMailbox.address)
+
+    --tasks : Signal (T.Task error ())
+    tasks =
+      stateAndTask
+        |> Signal.filterMap snd (T.succeed app.noOp)
+        |> Signal.map (\task -> task `T.andThen` sendToMailbox)
   in
-    Signal.map (app.view address) model
+    (html, tasks)
