@@ -41,10 +41,10 @@ hard in other languages.
 [address]: http://package.elm-lang.org/packages/elm-lang/core/2.0.1/Signal#Mailbox
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 -}
-type alias App model action error =
+type alias App model error action =
     { initialState : model
     , view : Address action -> model -> Html
-    , update : LoopbackFun action error
+    , update : LoopbackFun error action
             -> action
             -> model
             -> (model, Maybe (T.Task error ()))
@@ -53,7 +53,7 @@ type alias App model action error =
 
 {-| Use this in your update function to push the result of a task
 into your action channel. (TODO: more docs) -}
-type alias LoopbackFun action error =
+type alias LoopbackFun error action =
   T.Task error action -> T.Task error ()
 
 {-| This actually starts up your `App`. The following code sets up a counter
@@ -87,12 +87,12 @@ Notice that the program cleanly breaks up into model, update, and view.
 This means it is super easy to test your update logic independent of any
 rendering.
 -}
-start : App model action error
+start : App model error action
      -> Signal action
      -> (Signal Html, Signal (T.Task error ()))
 start app externalActions =
   let
-    --loopbackFun : LoopbackFun action error
+    --loopbackFun : LoopbackFun error action
     loopbackFun actionTask =
       actionTask
         `T.andThen` (Signal.send actionsMailbox.address)
