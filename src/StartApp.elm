@@ -17,6 +17,7 @@ shockingly pleasant. Definititely read [the tutorial][arch] to get started!
 import Html exposing (..)
 import Signal exposing (Address)
 import Task as T
+import Time
 
 
 {-| An app has three key components:
@@ -45,6 +46,7 @@ type alias App model error action =
     { initialState : model
     , view : Address action -> model -> Html
     , update : LoopbackFun error action
+            -> Time.Time
             -> action
             -> model
             -> (model, Maybe (T.Task error ()))
@@ -104,11 +106,12 @@ start app externalActions =
     --allActions : Signal action
     allActions =
       Signal.merge actionsMailbox.signal externalActions
+        |> Time.timestamp
 
     --stateAndTask : Signal (model, Maybe (T.Task error ()))
     stateAndTask =
       Signal.foldp
-        (\action (state, _) -> app.update loopbackFun action state)
+        (\(now, action) (state, _) -> app.update loopbackFun now action state)
         (app.initialState, Nothing)
         allActions
 
