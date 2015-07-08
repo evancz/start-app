@@ -115,7 +115,7 @@ resources:
     maintain, and refactor.
   * [elm-todomvc][] &mdash; a typical TodoMVC program ([live][]) built on the
     Elm Architecture. You will see the `model`, `update`, `view` pattern but
-    for a more realistic applicaiton than a counter.
+    for a more realistic application than a counter.
   * [dreamwriter][] &mdash; a writing app built in Elm that again uses the Elm
     Architecture. The creator has *never* had a runtime exception in his Elm
     code. Unlike JavaScript, Elm is designed for reliability that scales to
