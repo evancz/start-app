@@ -94,6 +94,9 @@ start : App model error action
      -> (Signal Html, Signal (T.Task error ()))
 start app externalActions =
   let
+    {- Annotations which use type vars commented out because if you uncomment
+    them, you get type errors like this:
+    https://gist.github.com/vilterp/a74cf622ee08c43e76ce -}
     --loopbackFun : LoopbackFun error action
     loopbackFun actionTask =
       actionTask
@@ -115,7 +118,7 @@ start app externalActions =
         (app.initialState, Nothing)
         allActions
 
-    --html : Signal Html
+    html : Signal Html
     html =
       stateAndTask
         |> Signal.map fst
