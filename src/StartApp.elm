@@ -22,7 +22,8 @@ import Time
 
 {-| An app has three key components:
 
-  * `model` &mdash; a big chunk of data fully describing your application.
+  * `initialState` &mdash; a big chunk of data fully describing the state of
+     your application when it first starts.
 
   * `view` &mdash; a way to show your model on screen. It takes in two
     arguments. One is the model, which contains *all* the information about our
@@ -50,7 +51,6 @@ type alias App model error action =
             -> action
             -> model
             -> (model, Maybe (T.Task error ()))
-    , noOp : action
     }
 
 {-| Use this in your update function to push the result of a task
@@ -64,12 +64,25 @@ programs like this [here](https://github.com/evancz/elm-architecture-tutorial/).
 
     import Html exposing (div, button, text)
     import Html.Events exposing (onClick)
+    import Task as T
     import StartApp
 
     main =
-      StartApp.start { model = model, view = view, update = update }
+      fst viewAndTasks
+    
+    port tasks : Signal (T.Task String ())
+    port tasks =
+      snd viewAndTasks
 
-    model = 0
+    externalActions =
+      Signal.constant NoOp
+
+    viewAndTasks =
+      StartApp.start
+        { initialState = initialState, view = view, update = update }
+        externalActions
+
+    initialState = 0
 
     view address model =
       div []
@@ -78,16 +91,22 @@ programs like this [here](https://github.com/evancz/elm-architecture-tutorial/).
         , button [ onClick address Increment ] [ text "+" ]
         ]
 
-    type Action = Increment | Decrement
+    type Action = Increment | Decrement | NoOp
 
-    update action model =
+    update loopback now action model =
       case action of
-        Increment -> model + 1
-        Decrement -> model - 1
+        Increment ->
+          (model + 1, Nothing)
+        Decrement ->
+          (model - 1, Nothing)
 
 Notice that the program cleanly breaks up into model, update, and view.
 This means it is super easy to test your update logic independent of any
 rendering.
+
+TODO: this example is somewhat ridiculous because it doesn't need to use
+tasks, external events, or time. Will come up with an example that actually
+uses them!
 -}
 start : App model error action
      -> Signal action
@@ -100,21 +119,26 @@ start app externalActions =
     --loopbackFun : LoopbackFun error action
     loopbackFun actionTask =
       actionTask
-        `T.andThen` (Signal.send actionsMailbox.address)
+        `T.andThen` (Signal.send justWrapper)
 
-    --actionsMailbox : Signal.Mailbox action
+    --actionsMailbox : Signal.Mailbox (Maybe action)
     actionsMailbox =
-      Signal.mailbox app.noOp
+      Signal.mailbox Nothing
 
-    --allActions : Signal action
+    justWrapper =
+      Signal.forwardTo actionsMailbox.address Just
+
+    --allActions : Signal (Time.Time, Maybe action)
     allActions =
-      Signal.merge actionsMailbox.signal externalActions
+      Signal.merge
+        actionsMailbox.signal
+        (Signal.map Just externalActions)
         |> Time.timestamp
 
     --stateAndTask : Signal (model, Maybe (T.Task error ()))
     stateAndTask =
       Signal.foldp
-        (\(now, action) (state, _) -> app.update loopbackFun now action state)
+        (\(now, Just action) (state, _) -> app.update loopbackFun now action state)
         (app.initialState, Nothing)
         allActions
 
@@ -122,7 +146,7 @@ start app externalActions =
     html =
       stateAndTask
         |> Signal.map fst
-        |> Signal.map (app.view actionsMailbox.address)
+        |> Signal.map (app.view justWrapper)
 
     --tasks : Signal (T.Task error ())
     tasks =
