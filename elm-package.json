@@ -1,7 +1,7 @@
 {
-    "version": "1.0.0",
-    "summary": "start making HTML apps really easily",
-    "repository": "https://github.com/evancz/start-app.git",
+    "version": "1.0.2",
+    "summary": "start making HTML apps really easily, plus tasks, external events and time",
+    "repository": "https://github.com/vilterp/start-app.git",
     "license": "BSD3",
     "source-directories": [
         "src"
