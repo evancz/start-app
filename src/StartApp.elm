@@ -7,20 +7,23 @@ shockingly pleasant. Definititely read [the tutorial][arch] to get started!
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 
 # Define your App
-@docs App
+@docs App, LoopbackFun
 
 # Run your App
 @docs start
 
 -}
 
-import Html exposing (Html)
+import Html exposing (..)
 import Signal exposing (Address)
+import Task as T
+import Time
 
 
 {-| An app has three key components:
 
-  * `model` &mdash; a big chunk of data fully describing your application.
+  * `initialState` &mdash; a big chunk of data fully describing the state of
+     your application when it first starts.
 
   * `view` &mdash; a way to show your model on screen. It takes in two
     arguments. One is the model, which contains *all* the information about our
@@ -40,12 +43,20 @@ hard in other languages.
 [address]: http://package.elm-lang.org/packages/elm-lang/core/2.0.1/Signal#Mailbox
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 -}
-type alias App model action =
-    { model : model
+type alias App model error action =
+    { initialState : model
     , view : Address action -> model -> Html
-    , update : action -> model -> model
+    , update : LoopbackFun error action
+            -> Time.Time
+            -> action
+            -> model
+            -> (model, Maybe (T.Task error ()))
     }
 
+{-| Use this in your update function to push the result of a task
+into your action channel. (TODO: more docs) -}
+type alias LoopbackFun error action =
+  T.Task error action -> T.Task error ()
 
 {-| This actually starts up your `App`. The following code sets up a counter
 that can be incremented and decremented. You can read more about writing
@@ -53,12 +64,25 @@ programs like this [here](https://github.com/evancz/elm-architecture-tutorial/).
 
     import Html exposing (div, button, text)
     import Html.Events exposing (onClick)
+    import Task as T
     import StartApp
 
     main =
-      StartApp.start { model = model, view = view, update = update }
+      fst viewAndTasks
+    
+    port tasks : Signal (T.Task String ())
+    port tasks =
+      snd viewAndTasks
 
-    model = 0
+    externalActions =
+      Signal.constant NoOp
+
+    viewAndTasks =
+      StartApp.start
+        { initialState = initialState, view = view, update = update }
+        externalActions
+
+    initialState = 0
 
     view address model =
       div []
@@ -67,30 +91,66 @@ programs like this [here](https://github.com/evancz/elm-architecture-tutorial/).
         , button [ onClick address Increment ] [ text "+" ]
         ]
 
-    type Action = Increment | Decrement
+    type Action = Increment | Decrement | NoOp
 
-    update action model =
+    update loopback now action model =
       case action of
-        Increment -> model + 1
-        Decrement -> model - 1
+        Increment ->
+          (model + 1, Nothing)
+        Decrement ->
+          (model - 1, Nothing)
 
 Notice that the program cleanly breaks up into model, update, and view.
 This means it is super easy to test your update logic independent of any
 rendering.
+
+TODO: this example is somewhat ridiculous because it doesn't need to use
+tasks, external events, or time. Will come up with an example that actually
+uses them!
 -}
-start : App model action -> Signal Html
-start app =
+start : App model error action
+     -> Signal action
+     -> (Signal Html, Signal (T.Task error ()))
+start app externalActions =
   let
-    actions =
+    {- Annotations which use type vars commented out because if you uncomment
+    them, you get type errors like this:
+    https://gist.github.com/vilterp/a74cf622ee08c43e76ce -}
+    --loopbackFun : LoopbackFun error action
+    loopbackFun actionTask =
+      actionTask
+        `T.andThen` (Signal.send justWrapper)
+
+    --actionsMailbox : Signal.Mailbox (Maybe action)
+    actionsMailbox =
       Signal.mailbox Nothing
 
-    address =
-      Signal.forwardTo actions.address Just
+    justWrapper =
+      Signal.forwardTo actionsMailbox.address Just
 
-    model =
+    --allActions : Signal (Time.Time, Maybe action)
+    allActions =
+      Signal.merge
+        actionsMailbox.signal
+        (Signal.map Just externalActions)
+        |> Time.timestamp
+
+    --stateAndTask : Signal (model, Maybe (T.Task error ()))
+    stateAndTask =
       Signal.foldp
-        (\(Just action) model -> app.update action model)
-        app.model
-        actions.signal
+        (\(now, Just action) (state, _) -> app.update loopbackFun now action state)
+        (app.initialState, Nothing)
+        allActions
+
+    html : Signal Html
+    html =
+      stateAndTask
+        |> Signal.map fst
+        |> Signal.map (app.view justWrapper)
+
+    --tasks : Signal (T.Task error ())
+    tasks =
+      stateAndTask
+        |> Signal.filterMap snd (T.succeed ())
   in
-    Signal.map (app.view address) model
+    (html, tasks)
