@@ -1,3 +1,5 @@
+**experimental fork of [evancz/start-app](https://github.com/evancz/start-app); docs below haven't been updated**
+
 # Using Elm is easier than ever
 
 Getting started with Elm is now easier than ever with the `StartApp` package.
