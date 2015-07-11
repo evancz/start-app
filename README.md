@@ -84,7 +84,7 @@ code-base does not rot and degrade as logic is spread to weirder and weirder
 places. The practical benefits of this are shocking.
 
 The point is, this package takes this architecture pattern that arises
-naturally in every Elm program, makes it explict, and makes it super simple to
+naturally in every Elm program, makes it explicit, and makes it super simple to
 use. The `StartApp` API only has two things in it. First, the definition of an
 `App`.
 
