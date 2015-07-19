@@ -5,10 +5,18 @@ Getting started with Elm is now easier than ever with the `StartApp` package.
 With [the Elm Architecture][arch], it has never been easier to write modular
 front-end code that is [shockingly fast][elm-html] and easy to test, refactor,
 and debug. The `StartApp` package drastically lowers the barrier to entry,
-seting everything up so you can focus entirely on writing your app. 
+setting everything up so you can focus entirely on writing your app. 
 
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 [elm-html]: http://elm-lang.org/blog/Blazing-Fast-Html.elm
+
+Try it [online][edit] or install [Elm Platform](https://www.npmjs.com/package/elm)
+and run these commands to get all the relevant packages locally:
+
+```
+elm-package install evancz/start-app
+elm-package install evancz/elm-html
+```
 
 ## Example
 
@@ -69,14 +77,14 @@ Even when you are hacking something together at 4am in the morning.
 
 But why? Everything in Elm is built on immutable data structures that
 provide an amazing amount of reliability in a large code base while
-[maintaining speed](http://elm-lang.org/blog/announce/0.12.1.elm). Immutability
+[maintaining speed](http://elm-lang.org/blog/announce/0.12.1). Immutability
 means that **it is literally impossible to mix your `model` and `view`**.
 It simply is not possible to mutate state in event handlers, so a growing
 code-base does not rot and degrade as logic is spread to weirder and weirder
 places. The practical benefits of this are shocking.
 
 The point is, this package takes this architecture pattern that arises
-naturally in every Elm program, makes it explict, and makes it super simple to
+naturally in every Elm program, makes it explicit, and makes it super simple to
 use. The `StartApp` API only has two things in it. First, the definition of an
 `App`.
 
@@ -89,7 +97,7 @@ type alias App model action =
 ```
 
 An `App` is defined as a `model`, a way to `update` that model, and a way to
-`view` that model. Your job is to define and `App` and then `start` it up!
+`view` that model. Your job is to define an `App` and then `start` it up!
 
 ```elm
 start : App model action -> Signal Html
@@ -107,7 +115,7 @@ resources:
     maintain, and refactor.
   * [elm-todomvc][] &mdash; a typical TodoMVC program ([live][]) built on the
     Elm Architecture. You will see the `model`, `update`, `view` pattern but
-    for a more realistic applicaiton than a counter.
+    for a more realistic application than a counter.
   * [dreamwriter][] &mdash; a writing app built in Elm that again uses the Elm
     Architecture. The creator has *never* had a runtime exception in his Elm
     code. Unlike JavaScript, Elm is designed for reliability that scales to

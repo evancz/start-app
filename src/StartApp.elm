@@ -33,7 +33,7 @@ import Signal exposing (Address)
     in the message and the current model, then we give back a new model!
 
 [The Elm Architecture][arch] augments this basic pattern to give you all the
-modularity you want. But since we have whole model in one place makes, it is
+modularity you want. But since we have whole model in one place, it is
 also really easy to support features like *save* and *undo* that can be quite
 hard in other languages.
 
