@@ -1,5 +1,8 @@
 module StartApp.Simple where
-{-| This module makes it super simple to get started making a typical web-app.
+{-| This module makes it super simple to get started making a typical web app.
+This is what you want if you are new to Elm, still getting a handle on the
+syntax and patterns.
+
 It is designed to work perfectly with [the Elm Architecture][arch] which
 describes a simple architecture pattern that makes testing and refactoring
 shockingly pleasant. Definititely read [the tutorial][arch] to get started!

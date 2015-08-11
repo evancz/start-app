@@ -1,9 +1,13 @@
 module StartApp ( start, Config, App ) where
-{-| When you have created an application following
-[the Elm Architecture](https://github.com/evancz/elm-architecture-tutorial)
-that uses
-[elm-effects](http://package.elm-lang.org/packages/evancz/elm-effects/latest),
-this module will get it all running for you!
+{-| This module helps you start your application in a typical Elm workflow.
+It assumes you are following [the Elm Architecture][arch] and using
+[elm-effects][]. From there it will wire everything up for you!
+
+**Be sure to [read the Elm Architecture tutorial][arch] to learn how this all
+works!**
+
+[arch]: https://github.com/evancz/elm-architecture-tutorial
+[elm-effects]: http://package.elm-lang.org/packages/evancz/elm-effects/latest
 
 # Start your Application
 @docs start, Config, App
