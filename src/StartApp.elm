@@ -1,96 +1,104 @@
-module StartApp where
-{-| This module makes it super simple to get started making a typical web-app.
-It is designed to work perfectly with [the Elm Architecture][arch] which
-describes a simple architecture pattern that makes testing and refactoring
-shockingly pleasant. Definititely read [the tutorial][arch] to get started!
+module StartApp ( start, Config, App ) where
+{-| When you have created an application following
+[the Elm Architecture](https://github.com/evancz/elm-architecture-tutorial)
+that uses
+[elm-effects](http://package.elm-lang.org/packages/evancz/elm-effects/latest),
+this module will get it all running for you!
 
-[arch]: https://github.com/evancz/elm-architecture-tutorial/
-
-# Define your App
-@docs App
-
-# Run your App
-@docs start
+# Start your Application
+@docs start, Config, App
 
 -}
 
 import Html exposing (Html)
-import Signal exposing (Address)
+import Task
+import Effects exposing (Effects, Never)
 
 
-{-| An app has three key components:
+{-| The configuration of an app follows the basic model / update / view pattern
+that you see in every Elm program.
 
-  * `model` &mdash; a big chunk of data fully describing your application.
+The `init` transaction will give you an initial model and create any tasks that
+are needed on start up.
 
-  * `view` &mdash; a way to show your model on screen. It takes in two
-    arguments. One is the model, which contains *all* the information about our
-    app. The other is an [`Address`][address] that helps us handle user input.
-    Whenever there is a click or key press, we send a message to the address
-    describing what happened and where.
+The `update` and `view` fields describe how to step the model and view the
+model.
 
-  * `update` &mdash; a function to update your model. Whenever a UI event
-    occurs, is routed through the `Address` to this update function. We take
-    in the message and the current model, then we give back a new model!
-
-[The Elm Architecture][arch] augments this basic pattern to give you all the
-modularity you want. But since we have whole model in one place, it is
-also really easy to support features like *save* and *undo* that can be quite
-hard in other languages.
-
-[address]: http://package.elm-lang.org/packages/elm-lang/core/2.0.1/Signal#Mailbox
-[arch]: https://github.com/evancz/elm-architecture-tutorial/
+The `inputs` field is for any external signals you might need. If you need to
+get values from JavaScript, they will come in through a port as a signal which
+you can pipe into your app as one of the `inputs`.
 -}
-type alias App model action =
-    { model : model
-    , view : Address action -> model -> Html
-    , update : action -> model -> model
+type alias Config model action =
+    { init : (model, Effects action)
+    , update : action -> model -> (model, Effects action)
+    , view : Signal.Address action -> model -> Html
+    , inputs : List (Signal.Signal action)
     }
 
 
-{-| This actually starts up your `App`. The following code sets up a counter
-that can be incremented and decremented. You can read more about writing
-programs like this [here](https://github.com/evancz/elm-architecture-tutorial/).
+{-| An `App` is made up of a couple signals:
 
-    import Html exposing (div, button, text)
-    import Html.Events exposing (onClick)
-    import StartApp
+  * `html` &mdash; a signal of `Html` representing the current visual
+    representation of your app. This should be fed into `main`.
+
+  * `model` &mdash; a signal representing the current model. Generally you
+    will not need this one, but it is there just in case. You will know if you
+    need this.
+
+  * `tasks` &mdash; a signal of tasks that need to get run. Your app is going
+    to be producing tasks in response to all sorts of events, so this needs to
+    be hooked up to a `port` to ensure they get run.
+-}
+type alias App model =
+    { html : Signal Html
+    , model : Signal model
+    , tasks : Signal (Task.Task Never ())
+    }
+
+
+{-| Start an application. It requires a bit of wiring once you have created an
+`App`. It should pretty much always look like this:
+
+    app =
+        start { init = init, view = view, update = update, inputs = [] }
 
     main =
-      StartApp.start { model = model, view = view, update = update }
+        app.html
 
-    model = 0
+    port tasks : Signal (Task.Task Never ())
+    port tasks =
+        app.tasks
 
-    view address model =
-      div []
-        [ button [ onClick address Decrement ] [ text "-" ]
-        , div [] [ text (toString model) ]
-        , button [ onClick address Increment ] [ text "+" ]
-        ]
-
-    type Action = Increment | Decrement
-
-    update action model =
-      case action of
-        Increment -> model + 1
-        Decrement -> model - 1
-
-Notice that the program cleanly breaks up into model, update, and view.
-This means it is super easy to test your update logic independent of any
-rendering.
+So once we start the `App` we feed the HTML into `main` and feed the resulting
+tasks into a `port` that will run them all.
 -}
-start : App model action -> Signal Html
-start app =
-  let
-    actions =
-      Signal.mailbox Nothing
+start : Config model action -> App model
+start config =
+    let
+        -- messages : Signal.Mailbox (Maybe action)
+        messages =
+            Signal.mailbox Nothing
 
-    address =
-      Signal.forwardTo actions.address Just
+        -- address : Signal.Address action
+        address =
+            Signal.forwardTo messages.address Just
 
-    model =
-      Signal.foldp
-        (\(Just action) model -> app.update action model)
-        app.model
-        actions.signal
-  in
-    Signal.map (app.view address) model
+        -- update : Maybe action -> (model, Effects action) -> (model, Effects action)
+        update (Just action) (model, _) =
+            config.update action model
+
+        -- inputs : Signal (Maybe action)
+        inputs =
+            Signal.mergeMany (messages.signal :: List.map (Signal.map Just) config.inputs)
+
+        -- effectsAndModel : Signal (model, Effects action)
+        effectsAndModel =
+            Signal.foldp update config.init inputs
+
+        model =
+            Signal.map fst effectsAndModel
+    in
+        { html = Signal.map (config.view address) model
+        , model = model
+        , tasks = Signal.map (Effects.toTask address << snd) effectsAndModel
+        }
