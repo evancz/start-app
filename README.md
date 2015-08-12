@@ -14,7 +14,7 @@ Try it [online][edit] or install [Elm Platform](https://www.npmjs.com/package/el
 and run these commands to get all the relevant packages locally:
 
 ```
-elm-package install evancz/start-app
+elm-package install evancz/start-app 1.0.0
 elm-package install evancz/elm-html
 ```
 
