@@ -50,7 +50,7 @@ update action model =
 ```
 
 <span style="color:grey;">
-Paste the code into [Elm's online editor][edit] to see it in action.
+Paste the code into [Elm's online editor][edit] or save it into `index.elm` and run `elm-reactor` to see it in action.
 </span>
 
 Notice that the `update` and `view` functions are totally separate. This is
