@@ -42,7 +42,7 @@ update action model =
     Decrement -> model - 1
 ```
 
-> Paste the code into [Elm's online editor][edit] to see it in action. If you like it, [install Elm on your machine](http://elm-lang.org/install) and start working through the [Elm Architecture tutorial][arch] which has a bunch of examples that will teach you how to set up an Elm project.
+> Paste the code into [Elm's online editor][edit] to see it in action. From there, [install Elm on your machine](http://elm-lang.org/install) and start working through the [Elm Architecture tutorial][arch] which starts with this counter example and gradually works up to programs with HTTP and animation.
 
 [edit]: http://elm-lang.org/try
 
@@ -57,6 +57,7 @@ Check out the full documentation for this library [here](http://package.elm-lang
 
 For more guidelines and examples of making apps in Elm, check out the following resources:
 
+  * [Language Docs](http://elm-lang.org/docs) &mdash; tons of learning resources that go from syntax to language features to design guidelines.
   * [The Elm Architecture][arch] &mdash; simple examples demonstrating how our basic counter app can scale to huge applications that are easy to test, maintain, and refactor.
   * [elm-todomvc][] &mdash; a typical TodoMVC program ([live][]) built on the Elm Architecture. You will see the `model`, `update`, `view` pattern but for a more realistic application than a counter.
   * [dreamwriter][] &mdash; a writing app built in Elm that again uses the Elm Architecture. The creator has *never* had a runtime exception in his Elm code. Unlike JavaScript, Elm is designed for reliability that scales to any size.
