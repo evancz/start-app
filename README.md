@@ -61,6 +61,7 @@ For more guidelines and examples of making apps in Elm, check out the following 
   * [The Elm Architecture][arch] &mdash; simple examples demonstrating how our basic counter app can scale to huge applications that are easy to test, maintain, and refactor.
   * [elm-todomvc][] &mdash; a typical TodoMVC program ([live][]) built on the Elm Architecture. You will see the `model`, `update`, `view` pattern but for a more realistic application than a counter.
   * [dreamwriter][] &mdash; a writing app built in Elm that again uses the Elm Architecture. The creator has *never* had a runtime exception in his Elm code. Unlike JavaScript, Elm is designed for reliability that scales to any size.
+  * [Awesome Elm][] &mdash; a curated list of useful Elm tutorials, libraries and software.
 
 [elm-todomvc]: https://github.com/evancz/elm-todomvc/blob/master/Todo.elm
 [live]: http://evancz.github.io/elm-todomvc/
