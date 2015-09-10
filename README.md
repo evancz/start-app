@@ -7,6 +7,25 @@ With [the Elm Architecture][arch], it has never been easier to write modular fro
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 [elm-html]: http://elm-lang.org/blog/Blazing-Fast-Html.elm
 
+## Get Started
+
+Once you have the [Elm Platform][platform], use [elm-package][package] to download
+the `StartApp` package. The commands would be something like this:
+
+[platform]: https://github.com/elm-lang/elm-platform#elm-platform
+[package]: https://github.com/elm-lang/elm-package#basic-usage
+
+```
+mkdir myProject
+cd myProject
+elm-package install evancz/start-app
+```
+
+Then follow the prompts to add `StartApp` to the project's `elm-package.json` file, and download it and its dependencies. After that you can import the `StartApp` module as described in the [example](#example).
+
+> To run the example locally you will also need to install the [`elm-html` package][elm-html-package]: `elm-package install evancz/elm-html`.
+
+[elm-html-package]: https://github.com/evancz/elm-html
 
 ## Example
 
@@ -49,7 +68,6 @@ update action model =
 Notice that the `update` and `view` functions are totally separate. This is great for architecture, but it also makes testing way easier. Your application logic is entirely isolated, so you can make sure it works correctly without worrying about the DOM.
 
 So this is a super simple program, but the core concepts here can grow into great code bases if you follow [the Elm Architecture][arch].
-
 
 ## Further Learning
 
