@@ -5,7 +5,7 @@ syntax and patterns.
 
 It is designed to work perfectly with [the Elm Architecture][arch] which
 describes a simple architecture pattern that makes testing and refactoring
-shockingly pleasant. Definititely read [the tutorial][arch] to get started!
+shockingly pleasant. Definitely read [the tutorial][arch] to get started!
 
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 
