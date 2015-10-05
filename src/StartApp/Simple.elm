@@ -13,6 +13,7 @@ shockingly pleasant. Definitely read [the tutorial][arch] to get started!
 @docs start, Config
 -}
 
+import Debug
 import Html exposing (Html)
 import Signal exposing (Address)
 
@@ -86,10 +87,15 @@ start config =
     address =
       Signal.forwardTo actions.address Just
 
+    update maybeAction model =
+      case maybeAction of
+        Just action ->
+            config.update action model
+
+        Nothing ->
+            Debug.crash "This should never happen."
+
     model =
-      Signal.foldp
-        (\(Just action) model -> config.update action model)
-        config.model
-        actions.signal
+      Signal.foldp update config.model actions.signal
   in
     Signal.map (config.view address) model
