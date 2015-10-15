@@ -17,6 +17,7 @@ works!**
 import Html exposing (Html)
 import Task
 import Effects exposing (Effects, Never)
+import Signal exposing (Address)
 
 
 {-| The configuration of an app follows the basic model / update / view pattern
@@ -49,13 +50,19 @@ type alias Config model action =
     will not need this one, but it is there just in case. You will know if you
     need this.
 
+  * `address` &mdash; an `Address action` that you can send actions to.
+    Normally you will not need this. For instance, if you have a `Signal action`
+    available before calling `start`, you can supply it to `start` via the
+    `inputs` field.
+
   * `tasks` &mdash; a signal of tasks that need to get run. Your app is going
     to be producing tasks in response to all sorts of events, so this needs to
     be hooked up to a `port` to ensure they get run.
 -}
-type alias App model =
+type alias App model action =
     { html : Signal Html
     , model : Signal model
+    , address : Address action
     , tasks : Signal (Task.Task Never ())
     }
 
@@ -76,7 +83,7 @@ type alias App model =
 So once we start the `App` we feed the HTML into `main` and feed the resulting
 tasks into a `port` that will run them all.
 -}
-start : Config model action -> App model
+start : Config model action -> App model action
 start config =
     let
         singleton action = [ action ]
@@ -113,5 +120,6 @@ start config =
     in
         { html = Signal.map (config.view address) model
         , model = model
+        , address = address
         , tasks = Signal.map (Effects.toTask messages.address << snd) effectsAndModel
         }
