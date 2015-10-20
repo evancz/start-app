@@ -17,6 +17,7 @@ works!**
 import Html exposing (Html)
 import Task
 import Effects exposing (Effects, Never)
+import Signal.Extra exposing (foldp', mapMany)
 
 
 {-| The configuration of an app follows the basic model / update / view pattern
@@ -100,13 +101,17 @@ start config =
         update actions (model, _) =
             List.foldl updateStep (model, Effects.none) actions
 
+        -- updateStart : List Action -> (model, Effects action)
+        updateStart actions =
+            List.foldl updateStep config.init actions
+
         -- inputs : Signal (List action)
         inputs =
-            Signal.mergeMany (messages.signal :: List.map (Signal.map singleton) config.inputs)
+            mapMany List.concat (messages.signal :: List.map (Signal.map singleton) config.inputs)
 
         -- effectsAndModel : Signal (model, Effects action)
         effectsAndModel =
-            Signal.foldp update config.init inputs
+            foldp' update updateStart inputs
 
         model =
             Signal.map fst effectsAndModel

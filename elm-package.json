@@ -11,6 +11,7 @@
         "StartApp.Simple"
     ],
     "dependencies": {
+        "Apanatshka/elm-signal-extra": "5.6.0 <= v < 6.0.0",
         "elm-lang/core": "2.0.1 <= v < 4.0.0",
         "evancz/elm-effects": "2.0.0 <= v < 3.0.0",
         "evancz/elm-html": "3.0.0 <= v < 5.0.0"
