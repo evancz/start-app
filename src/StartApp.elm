@@ -38,6 +38,7 @@ type alias Config model action =
     , update : action -> model -> (model, Effects action)
     , view : Signal.Address action -> model -> Html
     , inputs : List (Signal.Signal action)
+    , inits : List (Signal.Signal action)
     }
 
 
@@ -107,7 +108,9 @@ start config =
 
         -- inputs : Signal (List action)
         inputs =
-            mapMany List.concat (messages.signal :: List.map (Signal.map singleton) config.inputs)
+            combineInputs <|
+                 Signal.mergeMany (messages.signal :: List.map (Signal.map singleton) config.inputs)
+              :: List.map (Signal.map singleton) config.inits
 
         -- effectsAndModel : Signal (model, Effects action)
         effectsAndModel =
@@ -120,3 +123,12 @@ start config =
         , model = model
         , tasks = Signal.map (Effects.toTask messages.address << snd) effectsAndModel
         }
+
+combineInputs : List (Signal (List action)) -> Signal (List action)
+combineInputs signalList =
+  case List.reverse signalList of
+    [] ->
+        Signal.constant []
+
+    signal :: signals ->
+        List.foldl (Signal.Extra.fairMerge List.append) signal signals
