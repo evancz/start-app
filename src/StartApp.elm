@@ -32,6 +32,10 @@ model.
 The `inputs` field is for any external signals you might need. If you need to
 get values from JavaScript, they will come in through a port as a signal which
 you can pipe into your app as one of the `inputs`.
+
+The `inits` field works similarly to `inputs`, but the initial values of each signal
+will be applied when the application loads.
+
 -}
 type alias Config model action =
     { init : (model, Effects action)
@@ -106,11 +110,18 @@ start config =
         updateStart actions =
             List.foldl updateStep config.init actions
 
+        mergedInputs =
+          List.foldl
+            (Signal.Extra.fairMerge List.append)
+            messages.signal
+            (List.map (Signal.map singleton) config.inputs)
+
+        mergedInits =
+          List.map (Signal.map singleton) config.inits
+
         -- inputs : Signal (List action)
         inputs =
-            combineInputs <|
-                 Signal.mergeMany (messages.signal :: List.map (Signal.map singleton) config.inputs)
-              :: List.map (Signal.map singleton) config.inits
+            combineInputs (mergedInputs :: mergedInits)
 
         -- effectsAndModel : Signal (model, Effects action)
         effectsAndModel =
