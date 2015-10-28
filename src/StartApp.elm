@@ -106,22 +106,16 @@ start config =
         update actions (model, _) =
             List.foldl updateStep (model, Effects.none) actions
 
-        -- updateStart : List Action -> (model, Effects action)
+        -- updateStart : List action -> (model, Effects action)
         updateStart actions =
             List.foldl updateStep config.init actions
 
-        mergedInputs =
+        -- inputs : Signal (List action)
+        inputs =
           List.foldl
             (Signal.Extra.fairMerge List.append)
             messages.signal
-            (List.map (Signal.map singleton) config.inputs)
-
-        mergedInits =
-          List.map (Signal.map singleton) config.inits
-
-        -- inputs : Signal (List action)
-        inputs =
-            combineInputs (mergedInputs :: mergedInits)
+            (List.map (Signal.map singleton) (config.inputs ++ config.inits))
 
         -- effectsAndModel : Signal (model, Effects action)
         effectsAndModel =
@@ -134,12 +128,3 @@ start config =
         , model = model
         , tasks = Signal.map (Effects.toTask messages.address << snd) effectsAndModel
         }
-
-combineInputs : List (Signal (List action)) -> Signal (List action)
-combineInputs signalList =
-  case List.reverse signalList of
-    [] ->
-        Signal.constant []
-
-    signal :: signals ->
-        List.foldl (Signal.Extra.fairMerge List.append) signal signals
