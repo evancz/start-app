@@ -95,27 +95,27 @@ start config =
         address =
             Signal.forwardTo messages.address singleton
 
-        -- updateStep : action -> (model, Effects action) -> (model, Effects action)
-        updateStep action (oldModel, accumulatedEffects) =
+        -- updateStep : (Bool, action) -> (model, Effects action) -> (model, Effects action)
+        updateStep (_, action) (oldModel, accumulatedEffects) =
             let
                 (newModel, additionalEffects) = config.update action oldModel
             in
                 (newModel, Effects.batch [accumulatedEffects, additionalEffects])
 
-        -- update : List action -> (model, Effects action) -> (model, Effects action)
+        -- update : List (Bool, action) -> (model, Effects action) -> (model, Effects action)
         update actions (model, _) =
             List.foldl updateStep (model, Effects.none) actions
 
-        -- updateStart : List action -> (model, Effects action)
+        -- updateStart : List (Bool, action) -> (model, Effects action)
         updateStart actions =
-            List.foldl updateStep config.init actions
+            List.foldl updateStep config.init (List.filter fst actions)
 
-        -- inputs : Signal (List action)
+        -- inputs : Signal (List (Bool, action))
         inputs =
           List.foldl
             (Signal.Extra.fairMerge List.append)
-            messages.signal
-            (List.map (Signal.map singleton) (config.inputs ++ config.inits))
+            (Signal.map (List.map ((,) False)) messages.signal)
+            (List.map (Signal.map (singleton << (,) False)) config.inputs ++ List.map (Signal.map (singleton << (,) True)) config.inits)
 
         -- effectsAndModel : Signal (model, Effects action)
         effectsAndModel =
