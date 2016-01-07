@@ -42,9 +42,10 @@ update action model =
     Decrement -> model - 1
 ```
 
-> Paste the code into [Elm's online editor][edit] to see it in action. From there, [install Elm on your machine](http://elm-lang.org/install) and start working through the [Elm Architecture tutorial][arch] which starts with this counter example and gradually works up to programs with HTTP and animation.
+> Paste the code into [Elm's online editor][edit] to see it in action. From there, [install Elm on your machine](http://elm-lang.org/install) and run it locally following this step-by-step [example][local-example]. Start working through the [Elm Architecture tutorial][arch] which starts with this counter example and gradually works up to programs with HTTP and animation.
 
 [edit]: http://elm-lang.org/try
+[local-example]: https://github.com/brennan-v-/hello-elm-startapp
 
 Notice that the `update` and `view` functions are totally separate. This is great for architecture, but it also makes testing way easier. Your application logic is entirely isolated, so you can make sure it works correctly without worrying about the DOM.
 
