@@ -57,6 +57,7 @@ type alias App model =
     { html : Signal Html
     , model : Signal model
     , tasks : Signal (Task.Task Never ())
+    , inputs : Signal (List action)
     }
 
 
@@ -76,7 +77,7 @@ type alias App model =
 So once we start the `App` we feed the HTML into `main` and feed the resulting
 tasks into a `port` that will run them all.
 -}
-start : Config model action -> App model
+start : Config model action -> App model action
 start config =
     let
         singleton action = [ action ]
@@ -114,4 +115,5 @@ start config =
         { html = Signal.map (config.view address) model
         , model = model
         , tasks = Signal.map (Effects.toTask messages.address << snd) effectsAndModel
+        , inputs = inputs
         }
