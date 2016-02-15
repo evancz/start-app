@@ -53,7 +53,7 @@ type alias Config model action =
     to be producing tasks in response to all sorts of events, so this needs to
     be hooked up to a `port` to ensure they get run.
 -}
-type alias App model =
+type alias App model action =
     { html : Signal Html
     , model : Signal model
     , tasks : Signal (Task.Task Never ())
