@@ -7,6 +7,25 @@ With [the Elm Architecture][arch], it has never been easier to write modular fro
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 [elm-html]: http://elm-lang.org/blog/Blazing-Fast-Html.elm
 
+## The obligatory Hello World
+
+After [installing Elm][elm-install] on your local machine, it's time to install the elm-html plugin.
+
+```bash
+elm package install evancz/elm-html
+```
+
+Create a file, for example `helloworld.elm`, and put in the following:
+
+```elm
+import Html exposing (text)
+
+main = text "Hello World!"
+```
+
+Now simply run the app by typing `elm-reactor` in your terminal, and go to `localhost:8000/helloworld.elm`.
+
+[elm-install]: http://elm-lang.org/install
 
 ## Example
 
