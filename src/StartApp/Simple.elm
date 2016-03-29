@@ -23,10 +23,10 @@ import Signal exposing (Address)
   * `model` &mdash; a big chunk of data fully describing your application.
 
   * `view` &mdash; a way to show your model on screen. It takes in two
-    arguments. One is the model, which contains *all* the information about our
-    app. The other is an [`Address`][address] that helps us handle user input.
+    arguments. One is an [`Address`][address] that helps us handle user input.
     Whenever there is a click or key press, we send a message to the address
-    describing what happened and where.
+    describing what happened and where. The other is the model, which contains *all* the information about our
+    app.
 
   * `update` &mdash; a function to update your model. Whenever a UI event
     occurs, is routed through the `Address` to this update function. We take
