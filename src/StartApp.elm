@@ -32,7 +32,7 @@ The `inputs` field is for any external signals you might need. If you need to
 get values from JavaScript, they will come in through a port as a signal which
 you can pipe into your app as one of the `inputs`.
 Note that if multiple updates come in at the same time, the update from the
-left-most signal wins (as with Signal.mergeMany).
+left-most signal wins (as with [`Signal.mergeMany`](http://package.elm-lang.org/packages/elm-lang/core/latest/Signal#mergeMany)).
 -}
 type alias Config model action =
     { init : (model, Effects action)
