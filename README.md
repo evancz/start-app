@@ -42,13 +42,34 @@ update action model =
     Decrement -> model - 1
 ```
 
-> Paste the code into [Elm's online editor][edit] to see it in action. From there, [install Elm on your machine](http://elm-lang.org/install) and start working through the [Elm Architecture tutorial][arch] which starts with this counter example and gradually works up to programs with HTTP and animation.
-
-[edit]: http://elm-lang.org/try
 
 Notice that the `update` and `view` functions are totally separate. This is great for architecture, but it also makes testing way easier. Your application logic is entirely isolated, so you can make sure it works correctly without worrying about the DOM.
 
 So this is a super simple program, but the core concepts here can grow into great code bases if you follow [the Elm Architecture][arch].
+
+__Run the example online__
+
+Paste the code into [Elm's online editor][edit] to see it in action.
+
+[edit]: http://elm-lang.org/try
+
+__Run the example in your machine__
+
+From there, [install Elm on your machine](http://elm-lang.org/install) and, assuming you've copied the example into a file `Counter.elm` in an empty directory, run the following commands inside that directory:
+
+```bash
+# Create an elm-package.json file and install the required packages
+elm-package install -y evancz/start-app
+elm-package install -y evancz/elm-html
+# Compile the example file
+elm-make Counter.elm --output=counter.html
+# Open the compiled file with your browser
+open counter.html
+```
+
+You can read more about this commands in the [Get Started guide][started] or work through the [Elm Architecture tutorial][arch] which starts with this counter example and gradually works up to programs with HTTP and animation.
+
+[started]: http://elm-lang.org/get-started
 
 
 ## Further Learning
