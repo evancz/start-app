@@ -1,5 +1,10 @@
 # Using Elm is easier than ever
 
+### Important: since version 0.17 of elm-platform, this package has been deprecated and moved into [elm-lang/html](https://github.com/elm-lang/html). Please read [Upgrading to 0.17 guide](https://github.com/elm-lang/elm-platform/blob/master/upgrade-docs/0.17.md) for more information.
+
+----
+
+
 Getting started with Elm is now easier than ever with the `StartApp` package.
 
 With [the Elm Architecture][arch], it has never been easier to write modular front-end code that is [shockingly fast][elm-html] and easy to test, refactor, and debug. The `StartApp` package drastically lowers the barrier to entry, setting everything up so you can focus entirely on writing your app.
