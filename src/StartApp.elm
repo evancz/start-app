@@ -17,6 +17,7 @@ works!**
 import Html exposing (Html)
 import Task
 import Effects exposing (Effects, Never)
+import Signal.Extra exposing (foldp', mapMany)
 
 
 {-| The configuration of an app follows the basic model / update / view pattern
@@ -31,12 +32,17 @@ model.
 The `inputs` field is for any external signals you might need. If you need to
 get values from JavaScript, they will come in through a port as a signal which
 you can pipe into your app as one of the `inputs`.
+
+The `inits` field works similarly to `inputs`, but the initial values of each signal
+will be applied when the application loads.
+
 -}
 type alias Config model action =
     { init : (model, Effects action)
     , update : action -> model -> (model, Effects action)
     , view : Signal.Address action -> model -> Html
     , inputs : List (Signal.Signal action)
+    , inits : List (Signal.Signal action)
     }
 
 
@@ -89,24 +95,31 @@ start config =
         address =
             Signal.forwardTo messages.address singleton
 
-        -- updateStep : action -> (model, Effects action) -> (model, Effects action)
-        updateStep action (oldModel, accumulatedEffects) =
+        -- updateStep : (Bool, action) -> (model, Effects action) -> (model, Effects action)
+        updateStep (_, action) (oldModel, accumulatedEffects) =
             let
                 (newModel, additionalEffects) = config.update action oldModel
             in
                 (newModel, Effects.batch [accumulatedEffects, additionalEffects])
 
-        -- update : List action -> (model, Effects action) -> (model, Effects action)
+        -- update : List (Bool, action) -> (model, Effects action) -> (model, Effects action)
         update actions (model, _) =
             List.foldl updateStep (model, Effects.none) actions
 
-        -- inputs : Signal (List action)
+        -- updateStart : List (Bool, action) -> (model, Effects action)
+        updateStart actions =
+            List.foldl updateStep config.init (List.filter fst actions)
+
+        -- inputs : Signal (List (Bool, action))
         inputs =
-            Signal.mergeMany (messages.signal :: List.map (Signal.map singleton) config.inputs)
+          List.foldl
+            (Signal.Extra.fairMerge List.append)
+            (Signal.map (List.map ((,) False)) messages.signal)
+            (List.map (Signal.map (singleton << (,) False)) config.inputs ++ List.map (Signal.map (singleton << (,) True)) config.inits)
 
         -- effectsAndModel : Signal (model, Effects action)
         effectsAndModel =
-            Signal.foldp update config.init inputs
+            foldp' update updateStart inputs
 
         model =
             Signal.map fst effectsAndModel
